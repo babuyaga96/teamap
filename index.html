@@ -131,7 +131,7 @@ document.addEventListener("visibilitychange",()=>{if(!document.hidden&&me)load()
 $("go").onclick=async()=>{
   $("lmsg").textContent="…";
   const{error}=await sb.auth.signInWithPassword({email:$("em").value.trim(),password:$("pw").value});
-  $("lmsg").textContent=error?t("badLogin"):"";
+  $("lmsg").textContent=error?t("badLogin")+" ["+error.message+"]":"";
   if(!error)boot();
 };
 $("out").onclick=async()=>{await sb.auth.signOut();me=null;boot()};
