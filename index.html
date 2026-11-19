@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#1f3a5f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<title>Team AP</title>
+<style>
+:root{--bg:#eef0f2;--card:#fff;--tx:#17212e;--mut:#667083;--bd:#dde1e6;--ac:#1f3a5f;--in:#1a7f4b;--ex:#b3261e;--wn:#e8f0fb}
+@media (prefers-color-scheme:dark){:root{--bg:#10151c;--card:#1a212b;--tx:#e9edf2;--mut:#98a2b3;--bd:#2c3542;--ac:#5b8fd6;--in:#4cc38a;--ex:#ff7b72;--wn:#1c2b44}}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{touch-action:manipulation;-webkit-text-size-adjust:100%}
+body{margin:0;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom);background:var(--bg);color:var(--tx);font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans Malayalam",sans-serif}
+main{max-width:680px;margin:0 auto;padding:14px}
+.top{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.logo{height:56px;border-radius:10px;flex:none}.sp{flex:1}
+.btn2{padding:8px 12px;border:1px solid var(--bd);background:var(--card);color:var(--tx);border-radius:10px;font:inherit;cursor:pointer}
+h2{font-size:16px;margin:0 0 8px}
+.tabs{display:flex;gap:6px;margin-bottom:12px}
+.tabs button{flex:1;padding:10px 4px;border:1px solid var(--bd);background:var(--card);color:var(--tx);border-radius:10px;font:inherit;cursor:pointer}
+.tabs button.on{background:var(--ac);color:#fff;border-color:var(--ac)}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:14px;margin-bottom:12px}
+.alert{background:var(--wn);border:1px solid var(--ac);border-radius:12px;padding:12px;margin-bottom:12px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+label{display:block;font-size:13px;color:var(--mut);margin-bottom:8px}
+input,select{width:100%;padding:10px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font:inherit;margin-top:3px}
+.add{width:100%;padding:12px;border:0;border-radius:10px;background:var(--ac);color:#fff;font:inherit;font-weight:600;cursor:pointer}
+.big{font-size:24px;font-weight:700}.mut{color:var(--mut);font-size:13px}
+.in{color:var(--in)}.ex{color:var(--ex)}
+.row{display:flex;justify-content:space-between;gap:10px;padding:9px 0;border-bottom:1px solid var(--bd)}.row:last-child{border:0}
+.tbl{overflow-x:auto}table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{padding:8px 6px;text-align:right;border-bottom:1px solid var(--bd);white-space:nowrap}th:first-child,td:first-child{text-align:left}
+.lnk{background:none;border:0;color:var(--mut);cursor:pointer;font:inherit;font-size:13px;padding:4px 0}.lnk.sure{color:var(--ex);font-weight:600}.lnk.bl{color:var(--ac)}
+.chk{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--bd);color:var(--tx);font-size:16px;margin:0}
+.chk input{width:22px;height:22px;margin:0}
+#toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom));background:var(--tx);color:var(--bg);padding:10px 16px;border-radius:10px;font-size:14px;opacity:0;pointer-events:none;transition:opacity .2s;max-width:90%;z-index:9}
+#toast.on{opacity:1}
+#ov{position:fixed;inset:0;background:rgba(0,0,0,.85);display:flex;align-items:center;justify-content:center;z-index:8}#ov img{max-width:96%;max-height:90%}
+.hide{display:none!important}
+</style>
+</head>
+<body>
+<main>
+<div class="top"><img class="logo" src="logo.png" alt="Team AP"><div class="sp"></div>
+<button class="btn2" id="lang">മലയാളം</button><button class="btn2 hide" id="out" data-k="signOut"></button></div>
+
+<section id="login" class="hide"><div class="card">
+<label><span data-k="email"></span><input id="em" type="email" autocomplete="username"></label>
+<label><span data-k="pass"></span><input id="pw" type="password" autocomplete="current-password"></label>
+<button class="add" id="go" data-k="signIn"></button><div class="mut" id="lmsg" style="margin-top:8px"></div></div></section>
+
+<div id="app" class="hide">
+<div class="tabs"><button data-t="add" class="on" data-k="tAdd"></button><button data-t="day" data-k="tDay"></button><button data-t="sum" id="tabSum" data-k="tSum"></button></div>
+
+<section id="add"><div class="card">
+<label><span data-k="type"></span><select id="type"><option value="income" data-k="income"></option><option value="expense" data-k="expense"></option></select></label>
+<div class="grid"><label><span data-k="date"></span><input type="date" id="date"></label>
+<label><span data-k="amount"></span><input type="number" id="amt" inputmode="decimal" min="0"></label></div>
+<label><span data-k="about"></span><input id="about" data-p="aboutPh"></label>
+<label id="hrl"><span data-k="hours"></span><input type="number" id="hr" inputmode="decimal" min="0"></label>
+<label><span data-k="photo"></span><input type="file" id="photo" accept="image/*"></label>
+<button class="add" id="save" data-k="save"></button><div class="mut" id="msg" style="margin-top:8px"></div></div></section>
+
+<section id="day" class="hide"><div id="days"></div></section>
+
+<section id="sum" class="hide">
+<div id="alert"></div>
+<div class="card"><h2>EMI</h2><div id="emi"></div></div>
+<div class="grid">
+<div class="card"><div class="mut" data-k="tInc"></div><div class="big in" id="inc">₹0</div></div>
+<div class="card"><div class="mut" data-k="tExp"></div><div class="big ex" id="exp">₹0</div></div>
+<div class="card"><div class="mut" data-k="tNet"></div><div class="big" id="net">₹0</div></div>
+<div class="card"><div class="mut" data-k="tHrs"></div><div class="big" id="hrs">0</div></div></div>
+<div class="card tbl"><h2 data-k="monthly"></h2><div id="months"></div></div>
+<div class="card"><h2 data-k="xlT"></h2>
+<div class="grid"><label><span data-k="xFrom"></span><input type="date" id="xf"></label><label><span data-k="xTo"></span><input type="date" id="xt"></label></div>
+<button class="add" id="xl" data-k="xlBtn"></button></div>
+<div class="card hide" id="adm"><h2 data-k="setup"></h2>
+<div class="grid"><label><span data-k="sAmt"></span><input type="number" id="s_amt" inputmode="decimal"></label>
+<label><span data-k="sDay"></span><input type="number" id="s_day" min="1" max="31"></label></div>
+<button class="add" id="s_save" data-k="sSave"></button>
+<h2 style="margin-top:16px" data-k="team"></h2><div class="mut" data-k="teamHelp"></div><div id="team"></div></div>
+</section>
+</div>
+</main>
+<div id="toast"></div><div id="ov" class="hide"><img alt=""></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="config.js"></script>
+<script>
+["gesturestart","gesturechange","gestureend"].forEach(e=>document.addEventListener(e,x=>x.preventDefault()));
+if("serviceWorker"in navigator)navigator.serviceWorker.register("sw.js").catch(()=>{});
+const T={en:{tAdd:"Add",tDay:"Daily",tSum:"Summary",type:"Type",income:"Income",expense:"Expense",date:"Date",amount:"Amount (₹)",about:"What is it about?",aboutPh:"e.g. Diesel, client name",hours:"Hours worked",photo:"Bill photo (optional)",save:"Save entry",tInc:"Total income",tExp:"Total expenses",tNet:"Net operating profit",xlT:"Download Excel",xFrom:"From date",xTo:"To date",xlBtn:"Download Excel file",noData:"No entries in this date range.",tHrs:"Hours worked",monthly:"Monthly",month:"Month",net:"Net",setup:"EMI settings (admin)",sAmt:"EMI amount (₹)",sDay:"EMI date (day of month)",sSave:"Save settings",team:"Team",teamHelp:"Create logins in Supabase, then set each person's name and role here. Owners share the EMI.",owner:"Owner",admin:"Admin",partner:"Partner",operator:"Operator",email:"Email",pass:"Password",signIn:"Sign in",signOut:"Sign out",badLogin:"Wrong email or password.",
+saving:"Saving…",saved:"Saved ✓",needAmt:"Enter an amount.",err:"Something went wrong. Check your access and connection.",none:"No entries yet",noNote:"(no note)",by:"by",bill:"bill",del:"delete",sure:"Tap again to confirm",h:"h",
+emiNone:"EMI is not set up yet. An admin can set the amount and date, and mark owners in Team.",emiLine:(a,d,s,n)=>`Monthly EMI ${a} · due ${d} · ${n} owners · ${s} each`,paid:"paid",unpaid:"not paid",over:"EMI overdue",today:"EMI due today",inDays:n=>`EMI due in ${n} day${n>1?"s":""}`,share:"Each share",notPaid:"Not paid yet"},
+ml:{tAdd:"ചേർക്കുക",tDay:"ദിവസേന",tSum:"സംഗ്രഹം",type:"തരം",income:"വരവ്",expense:"ചെലവ്",date:"തീയതി",amount:"തുക (₹)",about:"എന്തിനെക്കുറിച്ചാണ്?",aboutPh:"ഉദാ: ഡീസൽ, ക്ലയന്റിന്റെ പേര്",hours:"ജോലി ചെയ്ത മണിക്കൂർ",photo:"ബില്ലിന്റെ ഫോട്ടോ (ഓപ്ഷണൽ)",save:"സേവ് ചെയ്യുക",tInc:"ആകെ വരവ്",tExp:"ആകെ ചെലവ്",tNet:"അറ്റ പ്രവർത്തന ലാഭം",xlT:"എക്സൽ ഡൗൺലോഡ്",xFrom:"തുടക്ക തീയതി",xTo:"അവസാന തീയതി",xlBtn:"എക്സൽ ഫയൽ ഡൗൺലോഡ് ചെയ്യുക",noData:"ഈ തീയതികൾക്കിടയിൽ എൻട്രികളില്ല.",tHrs:"ആകെ മണിക്കൂർ",monthly:"മാസം തോറും",month:"മാസം",net:"അറ്റം",setup:"ഇഎംഐ സെറ്റിംഗ്സ് (അഡ്മിൻ)",sAmt:"ഇഎംഐ തുക (₹)",sDay:"ഇഎംഐ തീയതി (മാസത്തിലെ ദിവസം)",sSave:"സെറ്റിംഗ്സ് സേവ് ചെയ്യുക",team:"ടീം",teamHelp:"Supabase-ൽ ലോഗിൻ ഉണ്ടാക്കിയ ശേഷം ഇവിടെ ഓരോരുത്തരുടെയും പേരും റോളും സെറ്റ് ചെയ്യുക. ഇഎംഐ ഓണർമാർ പങ്കിടും.",owner:"ഓണർ",admin:"അഡ്മിൻ",partner:"പങ്കാളി",operator:"ഓപ്പറേറ്റർ",email:"ഇമെയിൽ",pass:"പാസ്‌വേഡ്",signIn:"സൈൻ ഇൻ",signOut:"സൈൻ ഔട്ട്",badLogin:"ഇമെയിലോ പാസ്‌വേഡോ തെറ്റാണ്.",
+saving:"സേവ് ചെയ്യുന്നു…",saved:"സേവ് ചെയ്തു ✓",needAmt:"തുക നൽകുക.",err:"എന്തോ പിഴവുണ്ടായി. അനുമതിയും ഇന്റർനെറ്റും പരിശോധിക്കുക.",none:"എൻട്രികൾ ഒന്നുമില്ല",noNote:"(വിവരണമില്ല)",by:"ചേർത്തത്",bill:"ബിൽ",del:"ഡിലീറ്റ്",sure:"ഉറപ്പിക്കാൻ വീണ്ടും അമർത്തുക",h:"മ.",
+emiNone:"ഇഎംഐ ഇതുവരെ സെറ്റ് ചെയ്തിട്ടില്ല. അഡ്മിന് തുകയും തീയതിയും നൽകാം, ടീമിൽ ഓണർമാരെ അടയാളപ്പെടുത്തുകയും ചെയ്യാം.",emiLine:(a,d,s,n)=>`മാസ ഇഎംഐ ${a} · തീയതി ${d} · ${n} ഓണർമാർ · ഓരോരുത്തർക്കും ${s}`,paid:"അടച്ചു",unpaid:"അടച്ചിട്ടില്ല",over:"ഇഎംഐ അടയ്ക്കേണ്ട തീയതി കഴിഞ്ഞു",today:"ഇന്നാണ് ഇഎംഐ തീയതി",inDays:n=>`ഇഎംഐക്ക് ${n} ദിവസം ബാക്കി`,share:"ഓരോരുത്തരുടെയും വിഹിതം",notPaid:"ഇതുവരെ അടയ്ക്കാത്തവർ"}};
+let L="en";try{L=localStorage.getItem("lang")||"en"}catch(e){}
+const t=k=>T[L][k],$=id=>document.getElementById(id);
+const fmt=n=>"₹"+Math.round(n).toLocaleString("en-IN");
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const ld=d=>new Date(d.getTime()-d.getTimezoneOffset()*6e4).toISOString().slice(0,10);
+const sb=supabase.createClient(CONFIG.SUPABASE_URL,CONFIG.SUPABASE_ANON_KEY);
+let me=null,P=[],ent=[],S={},pays=[],pend=null,tm;
+const isMgr=()=>me&&me.role!=="operator";
+function toast(m){const e=$("toast");e.textContent=m;e.classList.add("on");clearTimeout(tm);tm=setTimeout(()=>e.classList.remove("on"),3000)}
+const nm=id=>(P.find(p=>p.id===id)||{}).name||"";
+
+function applyLang(){
+  document.documentElement.lang=L;$("lang").textContent=L==="ml"?"English":"മലയാളം";
+  document.querySelectorAll("[data-k]").forEach(e=>e.textContent=t(e.dataset.k));
+  document.querySelectorAll("[data-p]").forEach(e=>e.placeholder=t(e.dataset.p));
+  if(me)render();
+}
+$("lang").onclick=()=>{L=L==="en"?"ml":"en";try{localStorage.setItem("lang",L)}catch(e){}applyLang()};
+document.querySelectorAll(".tabs button").forEach(b=>b.onclick=()=>{
+  document.querySelectorAll(".tabs button").forEach(x=>x.classList.toggle("on",x===b));
+  ["add","day","sum"].forEach(s=>$(s).classList.toggle("hide",s!==b.dataset.t));
+  if(b.dataset.t!=="add")load();
+});
+$("date").value=ld(new Date());
+$("type").onchange=()=>$("hrl").classList.toggle("hide",$("type").value!=="income");
+document.addEventListener("visibilitychange",()=>{if(!document.hidden&&me)load()});
+
+// ---- auth
+$("go").onclick=async()=>{
+  $("lmsg").textContent="…";
+  const{error}=await sb.auth.signInWithPassword({email:$("em").value.trim(),password:$("pw").value});
+  $("lmsg").textContent=error?t("badLogin"):"";
+  if(!error)boot();
+};
+$("out").onclick=async()=>{await sb.auth.signOut();me=null;boot()};
+async function boot(){
+  const{data:{session}}=await sb.auth.getSession();
+  $("login").classList.toggle("hide",!!session);$("app").classList.toggle("hide",!session);$("out").classList.toggle("hide",!session);
+  if(session){me={id:session.user.id};await load()}
+}
+async function load(){
+  try{
+    const[p,e]=await Promise.all([sb.from("profiles").select("*"),sb.from("entries").select("*").order("date",{ascending:false}).order("created_at",{ascending:false})]);
+    if(p.error||e.error)throw 0;
+    P=p.data;ent=e.data.map(x=>({...x,amount:+x.amount,hours:+x.hours||0}));me=P.find(x=>x.id===me.id)||me;
+    if(isMgr()){
+      const[s,y]=await Promise.all([sb.from("settings").select("*").eq("id",1).single(),sb.from("emi_payments").select("*")]);
+      S=s.data||{};pays=y.data||[];
+    }
+    $("tabSum").classList.toggle("hide",!isMgr());$("adm").classList.toggle("hide",me.role!=="admin");
+    render();
+  }catch(e){toast(t("err"))}
+}
+
+// ---- EMI
+const owners=()=>P.filter(p=>p.is_owner);
+function cycle(){
+  const O=owners();if(!S.emi_day||!S.emi_amount||!O.length)return null;
+  const n=new Date(),mk=(y,m)=>y+"-"+String(m+1).padStart(2,"0"),paid=(k,id)=>pays.some(x=>x.month===k&&x.user_id===id);
+  let y=n.getFullYear(),m=n.getMonth(),key=mk(y,m);
+  if(O.every(o=>paid(key,o.id))){m++;if(m>11){m=0;y++}key=mk(y,m)}
+  const due=new Date(y,m,Math.min(+S.emi_day,new Date(y,m+1,0).getDate()));
+  return{key,due,O,paid,days:Math.round((due-new Date(n.getFullYear(),n.getMonth(),n.getDate()))/864e5)}
+}
+function renderEmi(){
+  const c=cycle();
+  if(!c){$("emi").innerHTML=`<span class="mut">${t("emiNone")}</span>`;$("alert").innerHTML="";return}
+  const share=S.emi_amount/c.O.length,un=c.O.filter(o=>!c.paid(c.key,o.id));
+  const dt=c.due.toLocaleDateString(L==="ml"?"ml-IN":"en-IN",{day:"numeric",month:"short",year:"numeric"});
+  $("alert").innerHTML=(c.days<=2&&un.length)?`<div class="alert"><b>${c.days<0?t("over"):c.days===0?t("today"):t("inDays")(c.days)}</b> (${dt}). ${t("share")}: ${fmt(share)}.<br>${t("notPaid")}: ${esc(un.map(o=>o.name).join(", "))}</div>`:"";
+  $("emi").innerHTML=`<div class="mut">${t("emiLine")(fmt(S.emi_amount),dt,fmt(share),c.O.length)}</div>`+
+    c.O.map(o=>{const r=c.paid(c.key,o.id);return `<label class="chk"><input type="checkbox" data-id="${o.id}" ${r?"checked":""} ${o.id!==me.id?"disabled":""}><span style="flex:1">${esc(o.name)}</span><span class="mut">${r?t("paid"):t("unpaid")}</span></label>`}).join("");
+  $("emi").querySelectorAll("input:not([disabled])").forEach(cb=>cb.onchange=async()=>{
+    const q=cb.checked?await sb.from("emi_payments").insert({month:c.key,user_id:me.id}):await sb.from("emi_payments").delete().eq("month",c.key).eq("user_id",me.id);
+    if(q.error){cb.checked=!cb.checked;toast(t("err"))}else load();
+  });
+}
+function renderTeam(){
+  $("team").innerHTML=P.map(p=>`<div class="card" style="margin:8px 0 0;padding:10px" data-id="${p.id}"><input class="tn" value="${esc(p.name)}"><div class="grid"><select class="tr">${["admin","partner","operator"].map(r=>`<option value="${r}" ${p.role===r?"selected":""}>${t(r)}</option>`).join("")}</select><label class="chk" style="border:0"><input type="checkbox" class="to" ${p.is_owner?"checked":""}>${t("owner")}</label></div></div>`).join("");
+  $("team").querySelectorAll("[data-id]").forEach(d=>{
+    const save=async()=>{const q=await sb.from("profiles").update({name:d.querySelector(".tn").value.trim(),role:d.querySelector(".tr").value,is_owner:d.querySelector(".to").checked}).eq("id",d.dataset.id);q.error?toast(t("err")):load()};
+    d.querySelectorAll("input,select").forEach(i=>i.onchange=save);
+  });
+}
+
+// ---- views
+function render(){
+  const inc=ent.filter(e=>e.type==="income"),exp=ent.filter(e=>e.type==="expense");
+  const si=inc.reduce((a,e)=>a+e.amount,0),se=exp.reduce((a,e)=>a+e.amount,0);
+  $("inc").textContent=fmt(si);$("exp").textContent=fmt(se);$("net").textContent=fmt(si-se);$("net").className="big "+(si-se>=0?"in":"ex");
+  $("hrs").textContent=inc.reduce((a,e)=>a+e.hours,0);
+  const mo={};ent.forEach(e=>{const k=e.date.slice(0,7);(mo[k]=mo[k]||{i:0,x:0})[e.type==="income"?"i":"x"]+=e.amount});
+  const mk=Object.keys(mo).sort().reverse();
+  $("months").innerHTML=mk.length?`<table><tr><th>${t("month")}</th><th>${t("income")}</th><th>${t("expense")}</th><th>${t("net")}</th></tr>${mk.map(k=>{const v=mo[k],n=v.i-v.x;return `<tr><td>${k}</td><td class="in">${fmt(v.i)}</td><td class="ex">${fmt(v.x)}</td><td class="${n>=0?"in":"ex"}"><b>${fmt(n)}</b></td></tr>`}).join("")}</table>`:`<span class="mut">${t("none")}</span>`;
+  const dy={};ent.forEach(e=>(dy[e.date]=dy[e.date]||[]).push(e));
+  $("days").innerHTML=Object.keys(dy).length?Object.keys(dy).sort().reverse().map(d=>{
+    const Q=dy[d],i=Q.filter(e=>e.type==="income").reduce((a,e)=>a+e.amount,0),x=Q.filter(e=>e.type==="expense").reduce((a,e)=>a+e.amount,0),h=Q.reduce((a,e)=>a+e.hours,0);
+    const head=isMgr()?`<span class="mut">${h?h+" "+t("h")+" · ":""}${t("net")} <b class="${i-x>=0?"in":"ex"}">${fmt(i-x)}</b></span>`:`<span class="mut">${h?h+" "+t("h"):""}</span>`;
+    return `<div class="card"><div class="row" style="padding-top:0"><b>${d}</b>${head}</div>`+Q.map(e=>`<div class="row"><div><div>${esc(e.about||t("noNote"))}</div><div class="mut">${e.hours?e.hours+" "+t("h")+" · ":""}${t("by")} ${esc(nm(e.created_by))}${e.bill_path?` · <button class="lnk bl" data-bill="${esc(e.bill_path)}">${t("bill")}</button>`:""}</div></div><div style="text-align:right"><b class="${e.type==="income"?"in":"ex"}">${e.type==="income"?"+":"−"}${fmt(e.amount)}</b><br>${(me.role==="admin"||e.created_by===me.id)?`<button class="lnk del${pend===e.id?" sure":""}" data-id="${e.id}">${pend===e.id?t("sure"):t("del")}</button>`:""}</div></div>`).join("")+`</div>`
+  }).join(""):`<div class="card mut">${t("none")}</div>`;
+  document.querySelectorAll(".del").forEach(b=>b.onclick=async()=>{
+    const id=b.dataset.id;
+    if(pend!==id){pend=id;render();setTimeout(()=>{if(pend===id){pend=null;render()}},4000);return}
+    pend=null;const q=await sb.from("entries").delete().eq("id",id);q.error?toast(t("err")):load();
+  });
+  document.querySelectorAll("[data-bill]").forEach(b=>b.onclick=async()=>{
+    const{data,error}=await sb.storage.from("bills").createSignedUrl(b.dataset.bill,3600);
+    if(error)return toast(t("err"));$("ov").querySelector("img").src=data.signedUrl;$("ov").classList.remove("hide");
+  });
+  if(isMgr()){renderEmi();if(me.role==="admin"){renderTeam();if(S.emi_amount!=null&&!$("s_amt").value){$("s_amt").value=S.emi_amount||"";$("s_day").value=S.emi_day||""}}}
+}
+$("ov").onclick=()=>$("ov").classList.add("hide");
+
+async function shrink(f){
+  const url=URL.createObjectURL(f),im=new Image();
+  await new Promise((r,j)=>{im.onload=r;im.onerror=j;im.src=url});
+  const k=Math.min(1,1280/Math.max(im.width,im.height)),c=document.createElement("canvas");
+  c.width=im.width*k;c.height=im.height*k;c.getContext("2d").drawImage(im,0,0,c.width,c.height);
+  URL.revokeObjectURL(url);return new Promise(r=>c.toBlob(r,"image/jpeg",.8));
+}
+$("save").onclick=async()=>{
+  const amount=parseFloat($("amt").value),m=$("msg");
+  if(!(amount>0))return(m.textContent=t("needAmt"));
+  m.textContent=t("saving");let bill_path=null;
+  try{
+    const f=$("photo").files[0];
+    if(f){bill_path=`${me.id}/${Date.now()}.jpg`;const u=await sb.storage.from("bills").upload(bill_path,await shrink(f),{contentType:"image/jpeg"});if(u.error)throw 0}
+    const q=await sb.from("entries").insert({type:$("type").value,date:$("date").value,amount,about:$("about").value.trim(),hours:$("type").value==="income"?(parseFloat($("hr").value)||0):0,bill_path});
+    if(q.error)throw 0;
+    ["amt","hr","about","photo"].forEach(i=>$(i).value="");m.textContent=t("saved");load();
+  }catch(e){m.textContent=t("err")}
+};
+$("s_save").onclick=async()=>{
+  const q=await sb.from("settings").update({emi_amount:parseFloat($("s_amt").value)||0,emi_day:parseInt($("s_day").value)||1}).eq("id",1);
+  q.error?toast(t("err")):(toast(t("saved")),load());
+};
+const d1=new Date();$("xf").value=ld(new Date(d1.getFullYear(),d1.getMonth(),1));$("xt").value=ld(d1);
+$("xl").onclick=()=>{
+  const a=$("xf").value,b=$("xt").value;
+  const R=ent.filter(e=>(!a||e.date>=a)&&(!b||e.date<=b)).sort((x,y)=>x.date.localeCompare(y.date));
+  if(!R.length)return toast(t("noData"));
+  if(!window.XLSX)return toast(t("err"));
+  const sum=(m,k,e)=>{const o=m[k]=m[k]||{Income:0,Expense:0,Hours:0};if(e.type==="income"){o.Income+=e.amount;o.Hours+=e.hours}else o.Expense+=e.amount};
+  const dy={},mo={};R.forEach(e=>{sum(dy,e.date,e);sum(mo,e.date.slice(0,7),e)});
+  const tab=(m,key)=>Object.keys(m).sort().map(k=>({[key]:k,Income:m[k].Income,Expense:m[k].Expense,"Net profit":m[k].Income-m[k].Expense,"Hours worked":m[k].Hours}));
+  const rows=R.map(e=>({Date:e.date,Type:e.type==="income"?"Income":"Expense",Amount:e.amount,About:e.about||"","Hours worked":e.hours||"","Entered by":nm(e.created_by),"Bill photo":e.bill_path?"Yes":""}));
+  const wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(rows),"Entries");
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(tab(dy,"Date")),"Daily");
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(tab(mo,"Month")),"Monthly");
+  XLSX.writeFile(wb,`Team-AP_${a||"start"}_to_${b||"end"}.xlsx`);
+};
+applyLang();boot();
+</script>
+</body>
+</html>
